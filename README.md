@@ -8,6 +8,10 @@
                                                                                   \ \____/
                                                                                    \/___/
 
+### underscore 1.8.3 源码中文注释
+
+个人阅读后, 翻译原文英文注释, 仅供参考, 如需交流:QQ531905408
+
 Underscore.js is a utility-belt library for JavaScript that provides
 support for the usual functional suspects (each, map, reduce, filter...)
 without extending any core JavaScript objects.
