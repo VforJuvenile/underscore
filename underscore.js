@@ -5,23 +5,27 @@
 
 (function() {
 
-  // Baseline setup
+  //  从这里开始
   // --------------
 
   // Establish the root object, `window` (`self`) in the browser, `global`
   // on the server, or `this` in some virtual machines. We use `self`
   // instead of `window` for `WebWorker` support.
+  // 创建一个根对象的引用,在浏览器中为window(self)对象,在服务器中为global对象,在一些虚拟机上为this对象.
+  // 如果支持WebWorker,我们使用self,而不是用window对象.
   var root = typeof self == 'object' && self.self === self && self ||
             typeof global == 'object' && global.global === global && global ||
             this;
 
   // Save the previous value of the `_` variable.
+  // 保存先前的_变量.
   var previousUnderscore = root._;
 
   // Save bytes in the minified (but not gzipped) version:
   var ArrayProto = Array.prototype, ObjProto = Object.prototype;
 
   // Create quick reference variables for speed access to core prototypes.
+  // 为了能快速使用原生核心的功能, 创建这些功能的引用
   var
     push = ArrayProto.push,
     slice = ArrayProto.slice,
