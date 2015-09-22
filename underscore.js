@@ -759,10 +759,12 @@
   };
 
   // Function (ahem) Functions
+  // 函数 方法
   // ------------------
 
   // Determines whether to execute a function as a constructor
   // or a normal function with the provided arguments
+  // 
   var executeBound = function(sourceFunc, boundFunc, context, callingContext, args) {
     if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
     var self = baseCreate(sourceFunc.prototype);
@@ -774,6 +776,7 @@
   // Create a function bound to a given object (assigning `this`, and arguments,
   // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
   // available.
+  // 将一个函数中的this绑定到一个给定的对象,参数arguments可选.
   _.bind = restArgs(function(func, context, args) {
     if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
     var bound = restArgs(function(callArgs) {
@@ -786,6 +789,7 @@
   // arguments pre-filled, without changing its dynamic `this` context. _ acts
   // as a placeholder by default, allowing any combination of arguments to be
   // pre-filled. Set `_.partial.placeholder` for a custom placeholder argument.
+  // 
   _.partial = restArgs(function(func, boundArgs) {
     var placeholder = _.partial.placeholder;
     var bound = function() {
@@ -805,6 +809,7 @@
   // Bind a number of an object's methods to that object. Remaining arguments
   // are the method names to be bound. Useful for ensuring that all callbacks
   // defined on an object belong to it.
+  // 将一个对象的一些函数绑定到该对象上去. 绑定对象中的回调方法非常有用
   _.bindAll = restArgs(function(obj, keys) {
     keys = flatten(keys, false, false);
     var index = keys.length;
@@ -816,6 +821,7 @@
   });
 
   // Memoize an expensive function by storing its results.
+  // 缓存非常耗时的函数的结果
   _.memoize = function(func, hasher) {
     var memoize = function(key) {
       var cache = memoize.cache;
@@ -829,6 +835,7 @@
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
+  // 延时给定的毫秒数执行一个函数
   _.delay = restArgs(function(func, wait, args) {
     return setTimeout(function(){
       return func.apply(null, args);
@@ -837,6 +844,7 @@
 
   // Defers a function, scheduling it to run after the current call stack has
   // cleared.
+  // 将一个函数放到调用栈中等待执行
   _.defer = _.partial(_.delay, _, 1);
 
   // Returns a function, that, when invoked, will only be triggered at most once
@@ -844,6 +852,9 @@
   // as much as it can, without ever going more than once per `wait` duration;
   // but if you'd like to disable the execution on the leading edge, pass
   // `{leading: false}`. To disable execution on the trailing edge, ditto.
+  // 返回一个函数,调用这个函数时,在给定的时间内只会触发一次.
+  // 通常,这个节流函数在一个周期内会尽快调用
+  // 如果想使第一次调用无效,请传递{leading:false}.使最后一次调用无效请传递{leading:true}
   _.throttle = function(func, wait, options) {
     var context, args, result;
     var timeout = null;
@@ -880,6 +891,8 @@
   // be triggered. The function will be called after it stops being called for
   // N milliseconds. If `immediate` is passed, trigger the function on the
   // leading edge, instead of the trailing.
+  // 返回一个函数, 这个函数频繁地调用不会有反应. 当调用后n毫秒后才真正触发
+  // 如果传递了immediate=true,那么会立即执行函数,而在n毫秒内调用无效
   _.debounce = function(func, wait, immediate) {
     var timeout, args, context, timestamp, result;
 
@@ -915,11 +928,13 @@
   // Returns the first function passed as an argument to the second,
   // allowing you to adjust arguments, run code before and after, and
   // conditionally execute the original function.
+  // 将第一个func函数当做第二个wrapper函数的参数,这样可以在执行func之前和之后调整参数执行
   _.wrap = function(func, wrapper) {
     return _.partial(wrapper, func);
   };
 
   // Returns a negated version of the passed-in predicate.
+  // 返回一个相反的断言函数
   _.negate = function(predicate) {
     return function() {
       return !predicate.apply(this, arguments);
@@ -928,6 +943,7 @@
 
   // Returns a function that is the composition of a list of functions, each
   // consuming the return value of the function that follows.
+  // 返回一系列函数嵌套后函数,即后一个函数的返回值当做前一个函数的参数
   _.compose = function() {
     var args = arguments;
     var start = args.length - 1;
@@ -940,6 +956,7 @@
   };
 
   // Returns a function that will only be executed on and after the Nth call.
+  // 返回一个在调用n次之后才起作用的函数
   _.after = function(times, func) {
     return function() {
       if (--times < 1) {
@@ -949,6 +966,7 @@
   };
 
   // Returns a function that will only be executed up to (but not including) the Nth call.
+  // 返回一个只能调用n次的函数,超过n次的调用为第n次的结果
   _.before = function(times, func) {
     var memo;
     return function() {
@@ -962,14 +980,17 @@
 
   // Returns a function that will be executed at most one time, no matter how
   // often you call it. Useful for lazy initialization.
+  // 返回一个只能调用一次的函数. 作为初始化函数非常有用
   _.once = _.partial(_.before, 2);
 
   _.restArgs = restArgs;
 
   // Object Functions
+  // 对象 方法
   // ----------------
 
   // Keys in IE < 9 that won't be iterated by `for key in ...` and thus missed.
+  // 在 IE < 9 中不能被for key in ... 枚举的属性
   var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
   var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
                       'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
