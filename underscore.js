@@ -1014,6 +1014,7 @@
 
   // Retrieve the names of an object's own properties.
   // Delegates to **ECMAScript 5**'s native `Object.keys`
+  // 获取一个对象中的自身的属性名数组, 如果存在Object.keys,则使用它
   _.keys = function(obj) {
     if (!_.isObject(obj)) return [];
     if (nativeKeys) return nativeKeys(obj);
@@ -1025,6 +1026,7 @@
   };
 
   // Retrieve all the property names of an object.
+  // 返回一个对象的所有属性
   _.allKeys = function(obj) {
     if (!_.isObject(obj)) return [];
     var keys = [];
@@ -1035,6 +1037,7 @@
   };
 
   // Retrieve the values of an object's properties.
+  // 返回一个对象的属性值数组
   _.values = function(obj) {
     var keys = _.keys(obj);
     var length = keys.length;
@@ -1047,6 +1050,8 @@
 
   // Returns the results of applying the iteratee to each element of the object
   // In contrast to _.map it returns an object
+  // 返回迭代函数iteratee对每个元素进行调用的结果
+  // 与_.map不同的是,这里返回一个对象
   _.mapObject = function(obj, iteratee, context) {
     iteratee = cb(iteratee, context);
     var keys = _.keys(obj),
@@ -1060,6 +1065,7 @@
   };
 
   // Convert an object into a list of `[key, value]` pairs.
+  // 将一个对象转换成[key,value]对的数组
   _.pairs = function(obj) {
     var keys = _.keys(obj);
     var length = keys.length;
@@ -1071,6 +1077,7 @@
   };
 
   // Invert the keys and values of an object. The values must be serializable.
+  // 将一个对象的键和值进行互换, 前提是互换之前的值是唯一的
   _.invert = function(obj) {
     var result = {};
     var keys = _.keys(obj);
@@ -1082,6 +1089,7 @@
 
   // Return a sorted list of the function names available on the object.
   // Aliased as `methods`
+  // 返回一个对象的方法的名称数组,并且对名称进行了排序
   _.functions = _.methods = function(obj) {
     var names = [];
     for (var key in obj) {
@@ -1091,6 +1099,7 @@
   };
 
   // An internal function for creating assigner functions.
+  // 一个内部函数,用于创建'分配函数'
   var createAssigner = function(keysFunc, defaults) {
     return function(obj) {
       var length = arguments.length;
@@ -1110,13 +1119,16 @@
   };
 
   // Extend a given object with all the properties in passed-in object(s).
+  // 将给定的对象的所有属性扩充到目标对象, 并且会覆盖相同属性名的值
   _.extend = createAssigner(_.allKeys);
 
   // Assigns a given object with all the own properties in the passed-in object(s)
   // (https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+  // 将给定对象的自身属性扩充到目标对象, 并且覆盖同属性名的值
   _.extendOwn = _.assign = createAssigner(_.keys);
 
   // Returns the first key on an object that passes a predicate test
+  // 返回第一个测试为真的属性的key
   _.findKey = function(obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = _.keys(obj), key;
@@ -1127,11 +1139,13 @@
   };
 
   // Internal pick helper function to determine if `obj` has key `key`.
+  // 内部辅助函数, 判读对象是否含有key
   var keyInObj = function(value, key, obj) {
     return key in obj;
   };
 
   // Return a copy of the object only containing the whitelisted properties.
+  // 返回一个包含指定属性的对象的副本
   _.pick = restArgs(function(obj, keys) {
     var result = {}, iteratee = keys[0];
     if (obj == null) return result;
@@ -1152,6 +1166,7 @@
   });
 
    // Return a copy of the object without the blacklisted properties.
+   // 返回一个不包含指定属性的对象副本
   _.omit = restArgs(function(obj, keys) {
     var iteratee = keys[0], context;
     if (_.isFunction(iteratee)) {
@@ -1167,11 +1182,13 @@
   });
 
   // Fill in a given object with default properties.
+  // 将给定对象中的属性扩充到目标对象中,并且不覆盖相同属性值,undefine除外
   _.defaults = createAssigner(_.allKeys, true);
 
   // Creates an object that inherits from the given prototype object.
   // If additional properties are provided then they will be added to the
   // created object.
+  // 从给定的原型创建一个对象. 如果需要附加一些属性, 传第一个额外对象参数
   _.create = function(prototype, props) {
     var result = baseCreate(prototype);
     if (props) _.extendOwn(result, props);
@@ -1179,6 +1196,7 @@
   };
 
   // Create a (shallow-cloned) duplicate of an object.
+  // 浅复制一个对象
   _.clone = function(obj) {
     if (!_.isObject(obj)) return obj;
     return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
