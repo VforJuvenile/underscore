@@ -1205,12 +1205,15 @@
   // Invokes interceptor with the obj, and then returns obj.
   // The primary purpose of this method is to "tap into" a method chain, in
   // order to perform operations on intermediate results within the chain.
+  // 将对象作为参数,调用interceptor函数,然后返回这个对象
+  // 主要意图是用作链式调用中的一环
   _.tap = function(obj, interceptor) {
     interceptor(obj);
     return obj;
   };
 
   // Returns whether an object has a given set of `key:value` pairs.
+  // 判断对个对象是否含有key:value键值对
   _.isMatch = function(object, attrs) {
     var keys = _.keys(attrs), length = keys.length;
     if (object == null) return !length;
@@ -1224,48 +1227,63 @@
 
 
   // Internal recursive comparison function for `isEqual`.
+  // 内部函数, 递归比较, 辅助isEuqual
   var eq, deepEq;
   eq = function(a, b, aStack, bStack) {
     // Identical objects are equal. `0 === -0`, but they aren't identical.
     // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+    // 完全相同才是相同. 0 === -0 ,但是它们不完全相同
+    // 请参考[Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
     if (a === b) return a !== 0 || 1 / a === 1 / b;
     // A strict comparison is necessary because `null == undefined`.
+    // 全等, 因为null == undefiend
     if (a == null || b == null) return a === b;
     // `NaN`s are equivalent, but non-reflexive.
+    // NaN是相同的, 但是却不等于自身, 奇葩
     if (a !== a) return b !== b;
     // Exhaust primitive checks
+    // 先粗略判断
     var type = typeof a;
     if (type !== 'function' && type !== 'object' && typeof b != 'object') return false;
     return deepEq(a, b, aStack, bStack);
   };
 
   // Internal recursive comparison function for `isEqual`.
+  // 内部函数, 递归比较, 辅助isEuqual
   deepEq = function(a, b, aStack, bStack) {
     // Unwrap any wrapped objects.
+    // 将对象解包
     if (a instanceof _) a = a._wrapped;
     if (b instanceof _) b = b._wrapped;
     // Compare `[[Class]]` names.
+    // 比较 类名 
     var className = toString.call(a);
     if (className !== toString.call(b)) return false;
     switch (className) {
       // Strings, numbers, regular expressions, dates, and booleans are compared by value.
+      // 字符串, 数字, 正则, 日期, 布尔 都是比较值
       case '[object RegExp]':
       // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
+      // 正则 强制转换成字符串进行比较
       case '[object String]':
         // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
         // equivalent to `new String("5")`.
+        // 原始类型和对应的包装类型 是 相等的; 所以"5"和new String("5")是相等的
         return '' + a === '' + b;
       case '[object Number]':
         // `NaN`s are equivalent, but non-reflexive.
         // Object(NaN) is equivalent to NaN
+        // NaN 是相等, 但是却不等于自身, 奇葩, Object(NaN)和NaN相等
         if (+a !== +a) return +b !== +b;
         // An `egal` comparison is performed for other numeric values.
+        // egal法比较数字是否相等
         return +a === 0 ? 1 / +a === 1 / b : +a === +b;
       case '[object Date]':
       case '[object Boolean]':
         // Coerce dates and booleans to numeric primitive values. Dates are compared by their
         // millisecond representations. Note that invalid dates with millisecond representations
         // of `NaN` are not equivalent.
+        // 日期和布尔 强制转换成数字类型来比较, 日期比较的是毫秒形式, 注意不合法的日期转换成数字后是NaN
         return +a === +b;
     }
 
@@ -1275,6 +1293,7 @@
 
       // Objects with different constructors are not equivalent, but `Object`s or `Array`s
       // from different frames are.
+      // 不同构造函数的对象不相等
       var aCtor = a.constructor, bCtor = b.constructor;
       if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor &&
                                _.isFunction(bCtor) && bCtor instanceof bCtor)
@@ -1284,56 +1303,72 @@
     }
     // Assume equality for cyclic structures. The algorithm for detecting cyclic
     // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+    // 判定循环结构的相等性. 
+    // 这个测试循环结构的算法适用于 ES 5.1 第 15.12.3节, 抽象操作`J0`
 
     // Initializing stack of traversed objects.
     // It's done here since we only need them for objects and arrays comparison.
+    // 初始化stack
+    // 用于对象,数组的比较
     aStack = aStack || [];
     bStack = bStack || [];
     var length = aStack.length;
     while (length--) {
       // Linear search. Performance is inversely proportional to the number of
       // unique nested structures.
+      // 线性搜索. 性能与嵌套结构数量的数量成反比
       if (aStack[length] === a) return bStack[length] === b;
     }
 
     // Add the first object to the stack of traversed objects.
+    // 增加第一个对象到栈中
     aStack.push(a);
     bStack.push(b);
 
     // Recursively compare objects and arrays.
+    // 递归比较对象和数组
     if (areArrays) {
       // Compare array lengths to determine if a deep comparison is necessary.
+      // 比较数组的长度来判读是否有继续比较的必要
       length = a.length;
       if (length !== b.length) return false;
       // Deep compare the contents, ignoring non-numeric properties.
+      // 深度比较
       while (length--) {
         if (!eq(a[length], b[length], aStack, bStack)) return false;
       }
     } else {
       // Deep compare objects.
+      // 深度比较对象
       var keys = _.keys(a), key;
       length = keys.length;
       // Ensure that both objects contain the same number of properties before comparing deep equality.
+      // 确保两个对象含有相同数量的属性
       if (_.keys(b).length !== length) return false;
       while (length--) {
         // Deep compare each member
+        // 深度比较每个成员属性
         key = keys[length];
         if (!(_.has(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
       }
     }
     // Remove the first object from the stack of traversed objects.
+    // 移除栈中的第一个遍历的对象
     aStack.pop();
     bStack.pop();
     return true;
   };
 
   // Perform a deep comparison to check if two objects are equal.
+  // 深度比较两个对象是否相等
   _.isEqual = function(a, b) {
     return eq(a, b);
   };
 
   // Is a given array, string, or object empty?
   // An "empty" object has no enumerable own-properties.
+  // 判读数组,字符串,对象是否为空
+  // 一个空对象没有可枚举的属性
   _.isEmpty = function(obj) {
     if (obj == null) return true;
     if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
@@ -1341,23 +1376,28 @@
   };
 
   // Is a given value a DOM element?
+  // 是否为DOM元素
   _.isElement = function(obj) {
     return !!(obj && obj.nodeType === 1);
   };
 
   // Is a given value an array?
   // Delegates to ECMA5's native Array.isArray
+  // 是否为数组
+  // 调用ECMA5 的 Array.isArray
   _.isArray = nativeIsArray || function(obj) {
     return toString.call(obj) === '[object Array]';
   };
 
   // Is a given variable an object?
+  // 是否为对象, 排除null
   _.isObject = function(obj) {
     var type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
   };
 
   // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp, isError.
+  // 增加一些isType方法: isArguments, isFunction, isString, isNumber, isDate, isRegExp, isError
   _.each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error'], function(name) {
     _['is' + name] = function(obj) {
       return toString.call(obj) === '[object ' + name + ']';
@@ -1366,6 +1406,7 @@
 
   // Define a fallback version of the method in browsers (ahem, IE < 9), where
   // there isn't any inspectable "Arguments" type.
+  // 定义浏览器一个兼容方法(哼╭(╯^╰)╮ IE < 9), 里面没有一个可检测的"Arguments"
   if (!_.isArguments(arguments)) {
     _.isArguments = function(obj) {
       return _.has(obj, 'callee');
@@ -1374,6 +1415,7 @@
 
   // Optimize `isFunction` if appropriate. Work around some typeof bugs in old v8,
   // IE 11 (#1621), Safari 8 (#1929), and PhantomJS (#2236).
+  // 适当地优化isFunction. 解决在旧V8中的一些typeof bugs
   var nodelist = root.document && root.document.childNodes;
   if (typeof /./ != 'function' && typeof Int8Array != 'object' && typeof nodelist != 'function') {
     _.isFunction = function(obj) {
@@ -1382,52 +1424,62 @@
   }
 
   // Is a given object a finite number?
+  // 给定的是一个有限数字?
   _.isFinite = function(obj) {
     return isFinite(obj) && !isNaN(parseFloat(obj));
   };
 
   // Is the given value `NaN`?
+  // 是否为NaN
   _.isNaN = function(obj) {
     return _.isNumber(obj) && isNaN(obj);
   };
 
   // Is a given value a boolean?
+  // 是否为bool
   _.isBoolean = function(obj) {
     return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
   };
 
   // Is a given value equal to null?
+  // 是否为null
   _.isNull = function(obj) {
     return obj === null;
   };
 
   // Is a given variable undefined?
+  // 是否未定义
   _.isUndefined = function(obj) {
     return obj === void 0;
   };
 
   // Shortcut function for checking if an object has a given property directly
   // on itself (in other words, not on a prototype).
+  // 判断一个对象是否自身含有key, 而不是在原型上
   _.has = function(obj, key) {
     return obj != null && hasOwnProperty.call(obj, key);
   };
 
   // Utility Functions
+  // 实用方法
   // -----------------
 
   // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
   // previous owner. Returns a reference to the Underscore object.
+  // 运行Underscore.js在noConflict模式下, _变量返回到之前的状态, 返回Underscore对象的引用
   _.noConflict = function() {
     root._ = previousUnderscore;
     return this;
   };
 
   // Keep the identity function around for default iteratees.
+  // 默认的迭代函数, 直接返回参数
   _.identity = function(value) {
     return value;
   };
 
   // Predicate-generating functions. Often useful outside of Underscore.
+  // 制造判断函数的函数, 通常在Underscore之外有用
   _.constant = function(value) {
     return function() {
       return value;
@@ -1439,6 +1491,7 @@
   _.property = property;
 
   // Generates a function for a given object that returns a given property.
+  // 产生一个函数, 获取给定对象的属性
   _.propertyOf = function(obj) {
     return obj == null ? function(){} : function(key) {
       return obj[key];
@@ -1447,6 +1500,7 @@
 
   // Returns a predicate for checking whether an object has a given set of
   // `key:value` pairs.
+  // 返回一个测试函数, 用来测试对象是否含有给定的key:value
   _.matcher = _.matches = function(attrs) {
     attrs = _.extendOwn({}, attrs);
     return function(obj) {
@@ -1455,6 +1509,7 @@
   };
 
   // Run a function **n** times.
+  // 运行一个函数n次, 返回运行结果数组
   _.times = function(n, iteratee, context) {
     var accum = Array(Math.max(0, n));
     iteratee = optimizeCb(iteratee, context, 1);
@@ -1463,6 +1518,7 @@
   };
 
   // Return a random integer between min and max (inclusive).
+  // 返回min和max(包含)之间的一个随机数
   _.random = function(min, max) {
     if (max == null) {
       max = min;
