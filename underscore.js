@@ -1528,11 +1528,13 @@
   };
 
   // A (possibly faster) way to get the current timestamp as an integer.
+  // 获取当前时间戳
   _.now = Date.now || function() {
     return new Date().getTime();
   };
 
    // List of HTML entities for escaping.
+   // html转码列表
   var escapeMap = {
     '&': '&amp;',
     '<': '&lt;',
@@ -1544,11 +1546,13 @@
   var unescapeMap = _.invert(escapeMap);
 
   // Functions for escaping and unescaping strings to/from HTML interpolation.
+  // 转码和反转码html字符函数
   var createEscaper = function(map) {
     var escaper = function(match) {
       return map[match];
     };
     // Regexes for identifying a key that needs to be escaped
+    // 查找转码字符的正则表达式
     var source = '(?:' + _.keys(map).join('|') + ')';
     var testRegexp = RegExp(source);
     var replaceRegexp = RegExp(source, 'g');
@@ -1562,6 +1566,7 @@
 
   // If the value of the named `property` is a function then invoke it with the
   // `object` as context; otherwise, return it.
+  // 如果属性为一个函数, 那么返回调用的结果, 否则直接返回这个属性
   _.result = function(object, prop, fallback) {
     var value = object == null ? void 0 : object[prop];
     if (value === void 0) {
@@ -1572,6 +1577,7 @@
 
   // Generate a unique integer id (unique within the entire client session).
   // Useful for temporary DOM ids.
+  // 产生一个唯一的id(在整个客户端), 一般用于DOM的id
   var idCounter = 0;
   _.uniqueId = function(prefix) {
     var id = ++idCounter + '';
@@ -1580,6 +1586,7 @@
 
   // By default, Underscore uses ERB-style template delimiters, change the
   // following template settings to use alternative delimiters.
+  // 默认情况下, Underscore使用ERB风格的模板界定符, 改变下面的设置可以自定义界定符
   _.templateSettings = {
     evaluate: /<%([\s\S]+?)%>/g,
     interpolate: /<%=([\s\S]+?)%>/g,
@@ -1589,10 +1596,13 @@
   // When customizing `templateSettings`, if you don't want to define an
   // interpolation, evaluation or escaping regex, we need one that is
   // guaranteed not to match.
+  // 当自定义templateSettings后, 如果你不想定义interpolation,evaluate或escaping 正则
+  // 需要保证一个不被匹配到
   var noMatch = /(.)^/;
 
   // Certain characters need to be escaped so that they can be put into a
   // string literal.
+  // 需要被转义的字符,  这样他们可以直接使用字符字面量
   var escapes = {
     "'": "'",
     '\\': '\\',
@@ -1612,6 +1622,9 @@
   // Underscore templating handles arbitrary delimiters, preserves whitespace,
   // and correctly escapes quotes within interpolated code.
   // NB: `oldSettings` only exists for backwards compatibility.
+  // JavaScript 微型模板, 类似John Resig的实现方法
+  // Underscore模板可以使用任意界定符, 维持空格, 并正确转义引号
+  // oldSettings的存在是为了可以回到之前的设置
   _.template = function(text, settings, oldSettings) {
     if (!settings && oldSettings) settings = oldSettings;
     settings = _.defaults({}, settings, _.templateSettings);
@@ -1677,17 +1690,22 @@
   };
 
   // OOP
+  // 面向对象
   // ---------------
   // If Underscore is called as a function, it returns a wrapped object that
   // can be used OO-style. This wrapper holds altered versions of all the
   // underscore functions. Wrapped objects may be chained.
+  // 如果Underscore被当做函数调用, 返回一个包装对象, 可以使用oo模式
+  // 这个包装可以改变underscore所有方法的调用模式, 链式调用
 
   // Helper function to continue chaining intermediate results.
+  // 辅助函数,将中间结果链式返回
   var chainResult = function(instance, obj) {
     return instance._chain ? _(obj).chain() : obj;
   };
 
   // Add your own custom functions to the Underscore object.
+  // 自定义扩展Underscore对象的方法
   _.mixin = function(obj) {
     _.each(_.functions(obj), function(name) {
       var func = _[name] = obj[name];
@@ -1700,9 +1718,11 @@
   };
 
   // Add all of the Underscore functions to the wrapper object.
+  // 将所有的Underscore方法增加到包装对象
   _.mixin(_);
 
   // Add all mutator Array functions to the wrapper.
+  // 增加所有的数组方法
   _.each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
     var method = ArrayProto[name];
     _.prototype[name] = function() {
@@ -1722,12 +1742,14 @@
   });
 
   // Extracts the result from a wrapped and chained object.
+  // 提取一个包装对象的值
   _.prototype.value = function() {
     return this._wrapped;
   };
 
   // Provide unwrapping proxy for some methods used in engine operations
   // such as arithmetic and JSON stringification.
+  // 为一些引擎方法提供解包代理, 如算术,JSON字符化
   _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
 
   _.prototype.toString = function() {
